@@ -38,7 +38,7 @@ const IntroOverlay = ({ onComplete }: { onComplete: () => void }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8, duration: 1 }}
-        className="text-4xl md:text-6xl font-serif font-bold uppercase tracking-widest text-center"
+        className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-serif font-bold uppercase tracking-widest text-center px-4"
       >
         Hành Trình <span className="text-[#FFFF00]">Vươn Mình</span>
       </motion.h1>
@@ -46,7 +46,7 @@ const IntroOverlay = ({ onComplete }: { onComplete: () => void }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 1 }}
-        className="mt-4 text-lg font-light italic opacity-90"
+        className="mt-4 text-sm sm:text-base md:text-lg font-light italic opacity-90 px-4 text-center"
       >
         "Khát vọng non sông - Bản lĩnh thế hệ mới"
       </motion.p>
@@ -80,7 +80,7 @@ const AchievementToast = ({ badge, onClose }: { badge: Badge; onClose: () => voi
       initial={{ x: 100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 100, opacity: 0 }}
-      className="fixed top-20 right-4 md:right-8 z-50 bg-white p-4 rounded-xl shadow-2xl border-l-4 border-vn-gold flex items-center gap-4 max-w-sm"
+      className="fixed top-16 md:top-20 right-2 md:right-4 lg:right-8 z-50 bg-white p-3 md:p-4 rounded-xl shadow-2xl border-l-4 border-vn-gold flex items-center gap-3 md:gap-4 max-w-[85%] sm:max-w-sm"
     >
       <div className="bg-vn-red p-3 rounded-full text-white">
         <Award size={24} />
@@ -177,13 +177,13 @@ const App: React.FC = () => {
         setCurrentView(view);
         setIsSidebarOpen(false);
       }}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
+      className={`w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-lg transition-colors duration-200 text-sm md:text-base ${
         currentView === view 
           ? 'bg-vn-red text-vn-gold font-bold shadow-md' 
           : 'text-ink hover:bg-parchment-dark'
       }`}
     >
-      <Icon size={20} />
+      <Icon className="w-4 h-4 md:w-5 md:h-5" />
       <span>{label}</span>
     </button>
   );
@@ -200,21 +200,21 @@ const App: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex w-64 flex-col bg-parchment border-r border-parchment-dark shadow-xl z-20">
-        <div className="p-6 border-b border-parchment-dark/50">
-          <h1 className="text-2xl font-serif font-bold text-vn-red flex items-center gap-2">
+      {/* Sidebar - Desktop & Tablet */}
+      <aside className="hidden lg:flex w-64 flex-col bg-parchment border-r border-parchment-dark shadow-xl z-20">
+        <div className="p-4 lg:p-6 border-b border-parchment-dark/50">
+          <h1 className="text-xl lg:text-2xl font-serif font-bold text-vn-red flex items-center gap-2">
             <Star className="text-vn-gold fill-vn-gold" /> Vươn Mình
           </h1>
         </div>
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-3 lg:p-4 space-y-2">
           <NavItem view={AppView.DASHBOARD} icon={LayoutDashboard} label="Tổng Quan" />
           <NavItem view={AppView.TIMELINE} icon={History} label="Dòng Chảy Lịch Sử" />
           <NavItem view={AppView.SCENARIO} icon={Gamepad2} label="Thử Thách Nhập Vai" />
           <NavItem view={AppView.MENTOR} icon={MessageSquareText} label="Người Dẫn Đường" />
         </nav>
         
-        <div className="p-4 border-t border-parchment-dark/50">
+        <div className="p-3 lg:p-4 border-t border-parchment-dark/50">
           <button 
             onClick={handleResetData}
             className="w-full flex items-center justify-center gap-2 text-xs text-gray-500 hover:text-red-600 transition-colors p-2 rounded hover:bg-red-50"
@@ -224,27 +224,31 @@ const App: React.FC = () => {
         </div>
       </aside>
 
-      {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 w-full bg-parchment h-16 flex items-center justify-between px-4 z-30 shadow-md">
-        <h1 className="font-serif font-bold text-vn-red flex items-center gap-2">
-           <Star size={20} className="text-vn-gold fill-vn-gold"/> Vươn Mình
+      {/* Mobile & Tablet Header */}
+      <div className="lg:hidden fixed top-0 w-full bg-parchment h-14 md:h-16 flex items-center justify-between px-4 md:px-6 z-30 shadow-md">
+        <h1 className="font-serif font-bold text-vn-red flex items-center gap-2 text-sm md:text-base">
+           <Star className="w-4 h-4 md:w-5 md:h-5 text-vn-gold fill-vn-gold"/> Vươn Mình
         </h1>
-        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2">
-          {isSidebarOpen ? <X /> : <Menu />}
+        <button 
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
+          className="p-2 hover:bg-parchment-dark rounded-lg transition-colors"
+          aria-label="Toggle menu"
+        >
+          {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile & Tablet Drawer */}
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-40 md:hidden" 
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden" 
             onClick={() => setIsSidebarOpen(false)}
           >
             <motion.div 
               initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }} transition={{ type: "spring", damping: 20 }}
-              className="bg-parchment w-64 h-full shadow-2xl p-4 pt-20 space-y-2 flex flex-col" 
+              className="bg-parchment w-64 md:w-80 h-full shadow-2xl p-4 pt-16 md:pt-20 space-y-2 flex flex-col" 
               onClick={e => e.stopPropagation()}
             >
               <NavItem view={AppView.DASHBOARD} icon={LayoutDashboard} label="Tổng Quan" />
@@ -253,7 +257,10 @@ const App: React.FC = () => {
               <NavItem view={AppView.MENTOR} icon={MessageSquareText} label="Người Dẫn Đường" />
               
               <div className="mt-auto pt-4 border-t border-gray-300">
-                 <button onClick={handleResetData} className="w-full flex items-center gap-2 text-sm text-red-600 p-2">
+                 <button 
+                   onClick={handleResetData} 
+                   className="w-full flex items-center gap-2 text-sm text-red-600 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                 >
                   <Trash2 size={16} /> Reset Game
                 </button>
               </div>
@@ -263,9 +270,9 @@ const App: React.FC = () => {
       </AnimatePresence>
 
       {/* Main Content Area */}
-      <main className="flex-1 relative overflow-hidden pt-16 md:pt-0 bg-[#F9F7F0]">
+      <main className="flex-1 relative overflow-hidden pt-14 md:pt-16 lg:pt-0 bg-[#F9F7F0]">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/aged-paper.png')] opacity-40 pointer-events-none mix-blend-multiply"></div>
-        <div className="h-full relative z-10">
+        <div className="h-full relative z-10 overflow-y-auto">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentView}
@@ -279,7 +286,7 @@ const App: React.FC = () => {
               {currentView === AppView.TIMELINE && <TimelineView />}
               {currentView === AppView.SCENARIO && <ScenarioGame onUpdateStats={handleUpdateStats} />}
               {currentView === AppView.MENTOR && (
-                <div className="h-full p-4 md:p-8 max-w-4xl mx-auto">
+                <div className="h-full p-3 md:p-6 lg:p-8 max-w-4xl mx-auto">
                   <MentorChat />
                 </div>
               )}

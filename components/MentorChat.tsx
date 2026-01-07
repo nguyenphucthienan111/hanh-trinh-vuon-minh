@@ -86,37 +86,37 @@ export const MentorChat: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-white rounded-lg shadow-xl overflow-hidden border border-parchment-dark">
-      <div className="bg-vn-red p-4 flex items-center gap-3 shadow-md z-10 shrink-0">
-        <div className="bg-vn-gold p-2 rounded-full">
-          <Bot className="text-vn-red" size={24} />
+      <div className="bg-vn-red p-3 sm:p-4 flex items-center gap-2 sm:gap-3 shadow-md z-10 shrink-0">
+        <div className="bg-vn-gold p-1.5 sm:p-2 rounded-full">
+          <Bot className="w-5 h-5 sm:w-6 sm:h-6 text-vn-red" />
         </div>
         <div>
-          <h2 className="text-white font-serif font-bold text-lg">Người Dẫn Đường</h2>
-          <p className="text-white/80 text-xs">Tri thức Hồ Chí Minh & Thời đại số</p>
+          <h2 className="text-white font-serif font-bold text-base sm:text-lg">Người Dẫn Đường</h2>
+          <p className="text-white/80 text-[10px] sm:text-xs">Tri thức Hồ Chí Minh & Thời đại số</p>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-parchment/30 scroll-smooth">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-parchment/30 scroll-smooth">
         {messages.map((msg) => (
           <div
             key={msg.id}
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[85%] rounded-2xl p-4 shadow-sm ${
+              className={`max-w-[90%] sm:max-w-[85%] rounded-2xl p-3 sm:p-4 shadow-sm ${
                 msg.role === 'user'
                   ? 'bg-blue-600 text-white rounded-br-none'
                   : 'bg-white text-ink border border-parchment-dark rounded-bl-none'
               }`}
             >
               {msg.role === 'model' ? (
-                 <div className="prose prose-sm max-w-none text-ink prose-p:leading-relaxed prose-li:marker:text-vn-red">
+                 <div className="prose prose-sm max-w-none text-ink prose-p:leading-relaxed prose-li:marker:text-vn-red prose-headings:text-ink prose-p:text-sm sm:prose-p:text-base">
                     <ReactMarkdown>{msg.text}</ReactMarkdown>
                  </div>
               ) : (
-                <p className="whitespace-pre-wrap">{msg.text}</p>
+                <p className="whitespace-pre-wrap text-sm sm:text-base">{msg.text}</p>
               )}
-              <span className={`text-[10px] block mt-2 opacity-70 ${msg.role === 'user' ? 'text-blue-100' : 'text-gray-400'}`}>
+              <span className={`text-[9px] sm:text-[10px] block mt-1.5 sm:mt-2 opacity-70 ${msg.role === 'user' ? 'text-blue-100' : 'text-gray-400'}`}>
                 {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
@@ -124,32 +124,33 @@ export const MentorChat: React.FC = () => {
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-white p-4 rounded-2xl rounded-bl-none shadow-sm border border-parchment-dark flex items-center gap-2">
-              <RefreshCw className="animate-spin text-vn-red" size={16} />
-              <span className="text-sm text-gray-500 italic">Đang suy ngẫm...</span>
+            <div className="bg-white p-3 sm:p-4 rounded-2xl rounded-bl-none shadow-sm border border-parchment-dark flex items-center gap-2">
+              <RefreshCw className="animate-spin text-vn-red w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="text-xs sm:text-sm text-gray-500 italic">Đang suy ngẫm...</span>
             </div>
           </div>
         )}
         <div ref={messagesEndRef} className="h-1" />
       </div>
 
-      <div className="p-4 bg-white border-t border-gray-100 shrink-0">
-        <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-full border border-gray-200 focus-within:border-vn-red focus-within:ring-1 focus-within:ring-vn-red transition-all">
+      <div className="p-3 sm:p-4 bg-white border-t border-gray-100 shrink-0">
+        <div className="flex items-center gap-2 bg-gray-50 p-1.5 sm:p-2 rounded-full border border-gray-200 focus-within:border-vn-red focus-within:ring-1 focus-within:ring-vn-red transition-all">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Hỏi về khởi nghiệp, học tập, rèn luyện..."
-            className="flex-1 bg-transparent px-4 py-2 outline-none text-ink placeholder-gray-400"
+            className="flex-1 bg-transparent px-3 sm:px-4 py-1.5 sm:py-2 outline-none text-ink placeholder-gray-400 text-sm sm:text-base"
             disabled={isLoading}
           />
           <button
             onClick={handleSend}
             disabled={isLoading || !input.trim()}
-            className="bg-vn-red text-white p-3 rounded-full hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="bg-vn-red text-white p-2 sm:p-3 rounded-full hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            aria-label="Send message"
           >
-            <Send size={18} />
+            <Send className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
           </button>
         </div>
       </div>
