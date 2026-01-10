@@ -1,15 +1,37 @@
 export enum AppView {
+  INTRO = 'INTRO',
   DASHBOARD = 'DASHBOARD',
   TIMELINE = 'TIMELINE',
   SCENARIO = 'SCENARIO',
-  MENTOR = 'MENTOR'
+  MENTOR = 'MENTOR',
+  LEADERBOARD = 'LEADERBOARD',
+  MINIGAME = 'MINIGAME'
+}
+
+export interface UserProfile {
+  name: string;
+  avatarId: string;
+  stats: UserStats;
+  badges: Badge[];
+  totalXp: number;
+  completedScenarioIds: string[]; // Danh sách ID các câu hỏi đã trả lời
+  hasCompletedMiniGame: boolean;  // Đã nhận thưởng MiniGame chưa
+}
+
+export interface LeaderboardEntry {
+  id: string;
+  name: string;
+  avatarId: string;
+  totalXp: number;
+  title: string;
+  timestamp: number;
 }
 
 export interface UserStats {
   resilience: number; // Kiên trì
   creativity: number; // Sáng tạo
   trust: number; // Vốn lòng tin
-  knowledge: number; // Kiến thức lịch sử
+  knowledge: number; // Kiến thức
 }
 
 export interface Badge {
@@ -31,8 +53,8 @@ export interface TimelineEvent {
 export interface Scenario {
   id: string;
   title: string;
-  context: string; // Modern context
-  historicalParallel: string; // Linked to HCM history
+  context: string;
+  historicalParallel: string;
   question: string;
   options: {
     id: 'a' | 'b';
@@ -47,4 +69,13 @@ export interface ChatMessage {
   role: 'user' | 'model';
   text: string;
   timestamp: Date;
+}
+
+export interface MemoryCard {
+  id: string;
+  content: string;
+  type: 'history' | 'modern';
+  pairId: string;
+  isFlipped: boolean;
+  isMatched: boolean;
 }

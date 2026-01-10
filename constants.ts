@@ -1,4 +1,4 @@
-import { Badge, Scenario, TimelineEvent } from "./types";
+import { Badge, Scenario, TimelineEvent, MemoryCard } from "./types";
 
 export const INITIAL_STATS = {
   resilience: 20, // Tinh thần kiên trì, chịu đựng gian khổ
@@ -38,6 +38,13 @@ export const BADGES: Badge[] = [
     description: "Thành thạo kỹ năng hội nhập và ngoại ngữ.",
     unlocked: false,
   },
+  {
+    id: "5",
+    name: "Bản Lĩnh Thép",
+    icon: "shield",
+    description: "Vượt qua mọi thử thách với tinh thần không bỏ cuộc (Kiên trì > 70).",
+    unlocked: false,
+  }
 ];
 
 export const TIMELINE_EVENTS: TimelineEvent[] = [
@@ -278,6 +285,206 @@ export const SCENARIOS: Scenario[] = [
       },
     ],
   },
+  {
+    id: "s8",
+    title: "Kết nối cộng đồng: Ẩn mình hay Dấn thân?",
+    historicalParallel:
+      "Năm 1919, Nguyễn Ái Quốc gia nhập Đảng Xã hội Pháp để có thêm tiếng nói và sự ủng hộ quốc tế. Người tích cực tham gia các diễn đàn, viết báo để kết nối với những người cùng chí hướng.",
+    context:
+      "Bạn là một Developer giỏi nhưng sống hướng nội (Introvert). Bạn được mời tham gia một sự kiện Tech Networking lớn vào cuối tuần. Bạn chỉ muốn ở nhà code.",
+    question: "Bạn sẽ làm gì?",
+    options: [
+      {
+        id: "a",
+        text: "Ở nhà. Code giỏi là được, 'hữu xạ tự nhiên hương', không cần xã giao.",
+        statsEffect: { trust: -10, knowledge: -5 },
+        feedback:
+          "Trong kỷ nguyên kết nối, cô lập là tự sát. Bác Hồ vĩ đại cũng cần đồng chí và bạn bè quốc tế. Networking không phải là nịnh nọt, mà là tìm kiếm cơ hội hợp tác.",
+      },
+      {
+        id: "b",
+        text: "Vượt qua sự ngại ngùng, chuẩn bị name card (hoặc LinkedIn) và đến sự kiện để lắng nghe và kết nối.",
+        statsEffect: { trust: 15, knowledge: 10, resilience: 10 },
+        feedback:
+          "Tuyệt vời! Bạn đang phá vỡ vỏ bọc của mình. Cơ hội thường đến từ những mối quan hệ bất ngờ. Đây là bước đầu của sự 'Hội nhập'.",
+      },
+    ],
+  },
+  {
+    id: "s9",
+    title: "Đối diện nghịch cảnh: Tuyệt vọng hay Biến nguy thành cơ?",
+    historicalParallel:
+      "Khi bị chính quyền Tưởng Giới Thạch bắt giam (1942-1943), trong tù ngục khổ sai, Bác không hề bi quan mà sáng tác tập thơ 'Nhật ký trong tù' bất hủ. 'Thân thể ở trong lao, tinh thần ở ngoài lao'.",
+    context:
+      "Công ty bạn phá sản do suy thoái kinh tế. Bạn mất việc, mất thu nhập và cảm thấy tương lai mù mịt.",
+    question: "Tâm thế của bạn lúc này?",
+    options: [
+      {
+        id: "a",
+        text: "Chán nản, oán trách số phận và xã hội. Nằm nhà 'chữa lành' dài hạn.",
+        statsEffect: { resilience: -20, creativity: -10 },
+        feedback:
+          "Nghịch cảnh là lửa thử vàng. Chán nản không giải quyết được vấn đề. Hãy nhớ tinh thần lạc quan cách mạng của Bác trong hoàn cảnh ngặt nghèo nhất.",
+      },
+      {
+        id: "b",
+        text: "Tận dụng thời gian rảnh để học kỹ năng mới, viết blog chia sẻ kinh nghiệm thất bại (Build in public) và tìm hướng đi mới.",
+        statsEffect: { resilience: 30, creativity: 15, knowledge: 10 },
+        feedback:
+          "Rất bản lĩnh! Biến thời gian 'chết' thành thời gian 'vàng' để nâng cấp bản thân. Thất bại chỉ là một trạm dừng chân trên hành trình vươn mình.",
+      },
+    ],
+  },
+  {
+    id: "s10",
+    title: "Tư duy sản phẩm: Cầu toàn hay Thực dụng?",
+    historicalParallel:
+      "Khi viết báo 'Người cùng khổ' (Le Paria), Bác dùng ngôn từ giản dị, dễ hiểu, tranh vẽ châm biếm sắc sảo để người dân lao động ít chữ cũng hiểu được. Người không viết hàn lâm cầu kỳ.",
+    context:
+      "Bạn đang phát triển một ứng dụng cho nông dân. Team thiết kế muốn giao diện phải thật 'ngầu', nhiều hiệu ứng 3D như các app công nghệ tại Mỹ.",
+    question: "Quan điểm của bạn?",
+    options: [
+      {
+        id: "a",
+        text: "Đồng ý. App phải đẹp, hiện đại thì mới thể hiện đẳng cấp công nghệ.",
+        statsEffect: { creativity: 5, trust: -15, knowledge: -5 },
+        feedback:
+          "Bạn đã quên đối tượng phục vụ là ai. Sản phẩm tốt nhất là sản phẩm phù hợp nhất, không phải hào nhoáng nhất. Nông dân cần sự đơn giản, dễ dùng.",
+      },
+      {
+        id: "b",
+        text: "Bác bỏ. Yêu cầu thiết kế tối giản, trực quan, chữ to, ít thao tác để phù hợp với thói quen của bà con nông dân.",
+        statsEffect: { trust: 25, knowledge: 15, creativity: 10 },
+        feedback:
+          "Tư duy 'Lấy dân làm gốc' trong phát triển sản phẩm! Hiểu người dùng (User Centric) là chìa khóa của mọi sản phẩm thành công.",
+      },
+    ],
+  },
+  {
+    id: "s11",
+    title: "Chiến thuật đàm phán: Cứng nhắc hay Linh hoạt?",
+    historicalParallel:
+      "Hiệp định Sơ bộ 1946: Bác chấp nhận cho quân Pháp vào miền Bắc để đẩy quân Tưởng về nước. Nhiều người cho là nhu nhược, nhưng đó là sự lùi 1 bước để tiến 3 bước.",
+    context:
+      "Bạn đang deal lương với công ty mơ ước. Họ offer thấp hơn kỳ vọng 15% nhưng hứa hẹn môi trường học tập tuyệt vời và cơ hội thăng tiến rõ ràng.",
+    question: "Bạn quyết định thế nào?",
+    options: [
+      {
+        id: "a",
+        text: "Kiên quyết từ chối. Giá trị của tôi là không đổi, không thể hạ mình.",
+        statsEffect: { resilience: 5, knowledge: -5, trust: -5 },
+        feedback:
+          "Đôi khi cứng nhắc quá sẽ làm gãy cơ hội. Trong đàm phán, cần nhìn vào 'Tổng giá trị' (Total Package) chứ không chỉ con số lương trước mắt.",
+      },
+      {
+        id: "b",
+        text: "Chấp nhận mức lương thấp hơn tạm thời (Lùi) để đổi lấy cơ hội học hỏi và review lương sau 6 tháng (Tiến).",
+        statsEffect: { knowledge: 20, resilience: 10, creativity: 5 },
+        feedback:
+          "Thông minh! Đây là sách lược 'Dĩ bất biến, ứng vạn biến'. Mục tiêu 'Sự nghiệp' là bất biến, nhưng 'Mức lương khởi điểm' có thể vạn biến.",
+      },
+    ],
+  },
+  {
+    id: "s12",
+    title: "Quản lý tài chính: Khoe khoang hay Tiết kiệm?",
+    historicalParallel:
+      "Bác Hồ nổi tiếng với đôi dép cao su và bộ quần áo kaki sờn. 'Một miếng khi đói bằng một gói khi no'. Tiết kiệm không phải là bủn xỉn, mà là trân trọng sức lao động.",
+    context:
+      "Bạn vừa nhận bonus dự án lớn. Bạn bè rủ mua iPhone đời mới nhất và đi du lịch sang chảnh để 'tự thưởng' và xây dựng hình ảnh thành đạt.",
+    question: "Bạn sử dụng tiền thế nào?",
+    options: [
+      {
+        id: "a",
+        text: "Mua ngay. Làm việc vất vả thì phải hưởng thụ, sống là không chờ đợi.",
+        statsEffect: { resilience: -10, knowledge: -5 },
+        feedback:
+          "Hưởng thụ không sai, nhưng tiêu xài hoang phí để 'làm màu' là cái bẫy tài chính. Cần tích lũy nguồn lực cho những mục tiêu lớn hơn.",
+      },
+      {
+        id: "b",
+        text: "Trích một phần nhỏ tự thưởng, phần lớn gửi tiết kiệm hoặc đầu tư vào khóa học nâng cao chuyên môn.",
+        statsEffect: { resilience: 15, knowledge: 10, trust: 5 },
+        feedback:
+          "Rất đúng đắn! 'Cần, Kiệm' là gốc rễ của sự thịnh vượng bền vững. Đầu tư vào bản thân luôn mang lại lợi nhuận cao nhất.",
+      },
+    ],
+  },
+  {
+    id: "s13",
+    title: "Xây dựng đội ngũ: Cục bộ hay Đa dạng?",
+    historicalParallel:
+      "Chính phủ lâm thời năm 1945 do Bác đứng đầu mời cả những nhân sĩ trí thức không phải Đảng viên, cả quan lại cũ tham gia, miễn là họ có tài và yêu nước.",
+    context:
+      "Bạn được quyền tuyển thành viên cho Startup. Bạn có xu hướng chỉ tuyển những người bạn thân quen, cùng trường, cùng quê vì 'dễ nói chuyện'.",
+    question: "Bạn có mở rộng phạm vi không?",
+    options: [
+      {
+        id: "a",
+        text: "Chỉ tuyển người quen cho an toàn, đỡ mất công training văn hóa.",
+        statsEffect: { creativity: -10, trust: -5 },
+        feedback:
+          "Tư duy cục bộ sẽ giết chết sự sáng tạo. 'Ao tù' thì không thể nuôi cá lớn. Bạn cần những góc nhìn khác biệt để phản biện và phát triển.",
+      },
+      {
+        id: "b",
+        text: "Chủ động tuyển người từ các background khác nhau (Kinh tế, Kỹ thuật, Nghệ thuật...) miễn là cùng chí hướng (Vision).",
+        statsEffect: { creativity: 25, trust: 20, knowledge: 10 },
+        feedback:
+          "Đại đoàn kết! Sự đa dạng (Diversity) là động lực của đổi mới sáng tạo. Bạn đang xây dựng một 'Chính phủ liên hiệp' thu nhỏ cho Startup của mình.",
+      },
+    ],
+  },
+  {
+    id: "s14",
+    title: "Tầm nhìn: Ngắn hạn hay Dài hạn?",
+    historicalParallel:
+      "Bác Hồ ra đi tìm đường cứu nước năm 21 tuổi, đến năm 51 tuổi mới trở về Pác Bó. 30 năm chuẩn bị cho một thời cơ. Tầm nhìn tính bằng thập kỷ.",
+    context:
+      "Bạn đang xây kênh TikTok. Có những content 'bẩn', gây sốc sẽ giúp bạn lên xu hướng (viral) rất nhanh kiếm tiền ngay. Content giáo dục sạch thì lên view rất chậm.",
+    question: "Bạn chọn hướng đi nào?",
+    options: [
+      {
+        id: "a",
+        text: "Làm content gây sốc trước để kiếm fame, sau này tẩy trắng sau.",
+        statsEffect: { trust: -30, resilience: -10 },
+        feedback:
+          "Đường tắt thường dẫn đến vực thẳm. Đánh đổi uy tín lấy sự nổi tiếng ảo là một ván cược thất bại. 'Vì lợi ích mười năm thì phải trồng cây'.",
+      },
+      {
+        id: "b",
+        text: "Kiên trì làm content sạch, giá trị thực. Chấp nhận đi chậm nhưng xây dựng được cộng đồng trung thành bền vững.",
+        statsEffect: { trust: 40, resilience: 20, knowledge: 10 },
+        feedback:
+          "Tầm nhìn của người lãnh đạo! Giá trị thật sẽ luôn trường tồn. Bạn đang xây dựng một di sản số (Digital Legacy) chứ không chỉ là một kênh giải trí.",
+      },
+    ],
+  },
+  {
+    id: "s15",
+    title: "Sáng tạo nội dung: Sao chép hay Việt hóa?",
+    historicalParallel:
+      "Bác Hồ dịch 'Tinh thần luật pháp' của Montesquieu hay Lịch sử Đảng Cộng sản Liên Xô không bao giờ dịch nguyên văn mà luôn biên soạn lại, thêm ví dụ Việt Nam để dân dễ hiểu.",
+    context:
+      "Bạn làm Content Creator. Bạn thấy một video nước ngoài rất hay. Cách nhanh nhất là Vietsub và re-up lại.",
+    question: "Bạn sẽ làm gì?",
+    options: [
+      {
+        id: "a",
+        text: "Re-up luôn cho nóng, đỡ tốn chất xám.",
+        statsEffect: { creativity: -20, knowledge: -5 },
+        feedback:
+          "Đó là sự lười biếng tư duy. Sao chép không tạo ra giá trị mới và vi phạm bản quyền.",
+      },
+      {
+        id: "b",
+        text: "Học ý tưởng cốt lõi, nhưng diễn giải lại bằng ngôn ngữ, ví dụ và bối cảnh của Việt Nam (Localization).",
+        statsEffect: { creativity: 25, knowledge: 15, trust: 10 },
+        feedback:
+          "Sáng tạo trên nền tảng tri thức nhân loại! Đó là cách Bác Hồ đã làm: Biến chủ nghĩa Mác - Lênin thành thực tiễn Cách mạng Việt Nam.",
+      },
+    ],
+  }
 ];
 
 export const AI_SYSTEM_INSTRUCTION = `
@@ -298,3 +505,23 @@ Kiến thức nền:
 - Tư tưởng về Đại đoàn kết.
 - Phong cách làm việc: Khoa học, cụ thể, nói đi đôi với làm.
 `;
+
+export const MEMORY_CARDS_DATA: Omit<MemoryCard, 'isFlipped' | 'isMatched'>[] = [
+  { id: 'h1', content: 'Bến Nhà Rồng (1911)', type: 'history', pairId: 'p1' },
+  { id: 'm1', content: 'Vươn Ra Biển Lớn (Go Global)', type: 'modern', pairId: 'p1' },
+  
+  { id: 'h2', content: 'Pác Bó (1941)', type: 'history', pairId: 'p2' },
+  { id: 'm2', content: 'Thị Trường Ngách (Niche Market)', type: 'modern', pairId: 'p2' },
+
+  { id: 'h3', content: 'Nhật Ký Trong Tù', type: 'history', pairId: 'p3' },
+  { id: 'm3', content: 'Khả Năng Tự Học (Resilience)', type: 'modern', pairId: 'p3' },
+
+  { id: 'h4', content: 'Đại Đoàn Kết', type: 'history', pairId: 'p4' },
+  { id: 'm4', content: 'Teamwork & Diversity', type: 'modern', pairId: 'p4' },
+
+  { id: 'h5', content: 'Dĩ Bất Biến Ứng Vạn Biến', type: 'history', pairId: 'p5' },
+  { id: 'm5', content: 'Linh Hoạt (Agile/Pivot)', type: 'modern', pairId: 'p5' },
+
+  { id: 'h6', content: 'Tiếng Pháp/Anh/Hoa', type: 'history', pairId: 'p6' },
+  { id: 'm6', content: 'Công Dân Toàn Cầu', type: 'modern', pairId: 'p6' },
+];
