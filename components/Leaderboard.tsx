@@ -77,11 +77,10 @@ export const Leaderboard: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-3xl shadow-xl border border-parchment-dark overflow-hidden min-h-[300px]">
-        <div className="bg-vn-red p-4 grid grid-cols-12 gap-4 text-white font-bold text-sm uppercase tracking-wider">
+        <div className="bg-vn-red p-4 grid grid-cols-10 gap-4 text-white font-bold text-sm uppercase tracking-wider">
           <div className="col-span-2 text-center">Hạng</div>
           <div className="col-span-5">Cán Bộ</div>
           <div className="col-span-3 text-right">Điểm Quiz</div>
-          <div className="col-span-2 text-center">Thao tác</div>
         </div>
 
         {isLoading ? (
@@ -97,7 +96,7 @@ export const Leaderboard: React.FC = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className={`grid grid-cols-12 gap-4 p-4 items-center hover:bg-yellow-50 transition-colors ${
+                className={`grid grid-cols-10 gap-4 p-4 items-center hover:bg-yellow-50 transition-colors ${
                   index < 3
                     ? "bg-gradient-to-r from-yellow-50/50 to-transparent"
                     : ""
@@ -127,15 +126,6 @@ export const Leaderboard: React.FC = () => {
                 </div>
                 <div className="col-span-3 text-right font-mono font-bold text-vn-red text-lg">
                   {entry.totalXp.toLocaleString()}
-                </div>
-                <div className="col-span-2 flex justify-center">
-                  <button
-                    onClick={() => handleDelete(entry.id, entry.name)}
-                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Xóa"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
                 </div>
               </motion.div>
             ))}
