@@ -4,6 +4,7 @@ import {
   collection,
   addDoc,
   getDocs,
+  getDoc,
   query,
   orderBy,
   limit,
@@ -93,26 +94,38 @@ export const saveScore = async (user: UserProfile) => {
 // Save quiz score specifically (for quiz game leaderboard)
 export const saveQuizScore = async (userName: string, avatarId: string, quizScore: number) => {
   try {
-    const level = Math.floor(quizScore / 2000) + 1;
-    let title = "Tân Binh";
-    if (quizScore >= 8000) title = "Lãnh Tụ Tương Lai";
-    else if (quizScore >= 6000) title = "Chiến Sĩ Cách Mạng";
-    else if (quizScore >= 4000) title = "Người Rèn Luyện";
-
-    const newEntry: Omit<LeaderboardEntry, "id"> = {
-      name: userName,
-      avatarId: avatarId,
-      totalXp: quizScore, // Store quiz score in totalXp field
-      title: title,
-      timestamp: Date.now(),
-    };
-
     const safeId = userName
       .trim()
       .toLowerCase()
       .replace(/[^a-z0-9]/g, "_");
 
-    await setDoc(doc(db, COLLECTION_NAME, safeId), newEntry);
+    // Check if user already has a score
+    const userDocRef = doc(db, COLLECTION_NAME, safeId);
+    const existingDoc = await getDoc(userDocRef);
+    let existingScore = 0;
+    
+    if (existingDoc.exists()) {
+      existingScore = existingDoc.data().totalXp || 0;
+    }
+
+    // Only save if new score is higher
+    const finalScore = Math.max(existingScore, quizScore);
+    
+    const level = Math.floor(finalScore / 2000) + 1;
+    let title = "Tân Binh";
+    if (finalScore >= 8000) title = "Lãnh Tụ Tương Lai";
+    else if (finalScore >= 6000) title = "Chiến Sĩ Cách Mạng";
+    else if (finalScore >= 4000) title = "Người Rèn Luyện";
+
+    const newEntry: Omit<LeaderboardEntry, "id"> = {
+      name: userName,
+      avatarId: avatarId,
+      totalXp: finalScore, // Store highest quiz score
+      title: title,
+      timestamp: Date.now(),
+    };
+
+    await setDoc(userDocRef, newEntry);
     
     // Invalidate cache to force refresh
     cachedLeaderboard = null;
