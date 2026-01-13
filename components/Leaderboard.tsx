@@ -1,22 +1,46 @@
 import React, { useEffect, useState } from "react";
 import { LeaderboardEntry } from "../types";
-import { getLeaderboard } from "../services/storageService";
-import { Trophy, Medal, User, Loader2 } from "lucide-react";
+import { getLeaderboard, deleteLeaderboardEntry } from "../services/storageService";
+import { Trophy, Medal, User, Loader2, Trash2, RefreshCcw } from "lucide-react";
 import { motion } from "framer-motion";
 
 export const Leaderboard: React.FC = () => {
   const [leaders, setLeaders] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const fetchLeaders = async (forceRefresh: boolean = false) => {
+    setIsLoading(true);
+    const data = await getLeaderboard(forceRefresh);
+    setLeaders(data);
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    const fetchLeaders = async () => {
-      setIsLoading(true);
-      const data = await getLeaderboard();
-      setLeaders(data);
-      setIsLoading(false);
-    };
     fetchLeaders();
   }, []);
+
+  const handleDelete = async (entryId: string, entryName: string) => {
+    if (!confirm(`Bạn có chắc muốn xóa "${entryName}" khỏi Bảng Vàng?`)) {
+      return;
+    }
+
+    // Optimistic update - xóa ngay khỏi UI
+    const previousLeaders = [...leaders];
+    setLeaders(leaders.filter(entry => entry.id !== entryId));
+    
+    // Xóa trên Firebase trong background
+    const success = await deleteLeaderboardEntry(entryId);
+    
+    if (!success) {
+      // Nếu lỗi thì khôi phục lại
+      setLeaders(previousLeaders);
+      alert("Không thể xóa. Vui lòng thử lại!");
+    }
+  };
+
+  const handleRefresh = () => {
+    fetchLeaders(true);
+  };
 
   const getRankIcon = (index: number) => {
     if (index === 0)
@@ -39,13 +63,25 @@ export const Leaderboard: React.FC = () => {
         <p className="text-gray-600 italic">
           "Thi đua là yêu nước, yêu nước thì phải thi đua"
         </p>
+        <p className="text-sm text-vn-red font-bold mt-2">
+          Trò Chơi Kiến Thức - Top 50 Điểm Cao Nhất
+        </p>
+        <button
+          onClick={handleRefresh}
+          disabled={isLoading}
+          className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-vn-red text-white rounded-full hover:bg-vn-red/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+        >
+          <RefreshCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          Làm mới
+        </button>
       </div>
 
       <div className="bg-white rounded-3xl shadow-xl border border-parchment-dark overflow-hidden min-h-[300px]">
         <div className="bg-vn-red p-4 grid grid-cols-12 gap-4 text-white font-bold text-sm uppercase tracking-wider">
           <div className="col-span-2 text-center">Hạng</div>
-          <div className="col-span-6">Cán Bộ</div>
-          <div className="col-span-4 text-right">Tổng Điểm XP</div>
+          <div className="col-span-5">Cán Bộ</div>
+          <div className="col-span-3 text-right">Điểm Quiz</div>
+          <div className="col-span-2 text-center">Thao tác</div>
         </div>
 
         {isLoading ? (
@@ -70,7 +106,7 @@ export const Leaderboard: React.FC = () => {
                 <div className="col-span-2 flex justify-center">
                   {getRankIcon(index)}
                 </div>
-                <div className="col-span-6 flex items-center gap-3">
+                <div className="col-span-5 flex items-center gap-3">
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-sm ${
                       entry.avatarId === "1"
@@ -89,8 +125,17 @@ export const Leaderboard: React.FC = () => {
                     <p className="text-xs text-gray-500">{entry.title}</p>
                   </div>
                 </div>
-                <div className="col-span-4 text-right font-mono font-bold text-vn-red text-lg">
+                <div className="col-span-3 text-right font-mono font-bold text-vn-red text-lg">
                   {entry.totalXp.toLocaleString()}
+                </div>
+                <div className="col-span-2 flex justify-center">
+                  <button
+                    onClick={() => handleDelete(entry.id, entry.name)}
+                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Xóa"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
                 </div>
               </motion.div>
             ))}

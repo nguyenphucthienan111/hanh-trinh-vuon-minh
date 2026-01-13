@@ -5,7 +5,7 @@ export enum AppView {
   SCENARIO = 'SCENARIO',
   MENTOR = 'MENTOR',
   LEADERBOARD = 'LEADERBOARD',
-  MINIGAME = 'MINIGAME'
+  QUIZ = 'QUIZ'
 }
 
 export interface UserProfile {
@@ -15,7 +15,6 @@ export interface UserProfile {
   badges: Badge[];
   totalXp: number;
   completedScenarioIds: string[]; // Danh sách ID các câu hỏi đã trả lời
-  hasCompletedMiniGame: boolean;  // Đã nhận thưởng MiniGame chưa
 }
 
 export interface LeaderboardEntry {
@@ -78,4 +77,12 @@ export interface MemoryCard {
   pairId: string;
   isFlipped: boolean;
   isMatched: boolean;
+}
+
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctAnswer: number; // Index of correct answer (0-3)
+  explanation: string;
 }

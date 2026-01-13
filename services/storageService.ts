@@ -9,31 +9,23 @@ import {
   limit,
   setDoc,
   doc,
+  deleteDoc,
 } from "firebase/firestore";
 
 const COLLECTION_NAME = "leaderboard";
 
-// Fallback mock data if Firebase fails or isn't configured
-const MOCK_LEADERS: LeaderboardEntry[] = [
-  {
-    id: "m1",
-    name: "Nguyễn Văn A",
-    avatarId: "1",
-    totalXp: 450,
-    title: "Lãnh Tụ Tương Lai",
-    timestamp: Date.now(),
-  },
-  {
-    id: "m2",
-    name: "Trần Thị B",
-    avatarId: "2",
-    totalXp: 380,
-    title: "Chiến Sĩ Cách Mạng",
-    timestamp: Date.now() - 100000,
-  },
-];
+// Cache for leaderboard data
+let cachedLeaderboard: LeaderboardEntry[] | null = null;
+let cacheTimestamp: number = 0;
+const CACHE_DURATION = 300000; // 5 minutes cache for faster loading
 
-export const getLeaderboard = async (): Promise<LeaderboardEntry[]> => {
+export const getLeaderboard = async (forceRefresh: boolean = false): Promise<LeaderboardEntry[]> => {
+  // Return cached data if available and not expired
+  const now = Date.now();
+  if (!forceRefresh && cachedLeaderboard && (now - cacheTimestamp < CACHE_DURATION)) {
+    return cachedLeaderboard;
+  }
+
   try {
     const q = query(
       collection(db, COLLECTION_NAME),
@@ -43,17 +35,24 @@ export const getLeaderboard = async (): Promise<LeaderboardEntry[]> => {
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      return MOCK_LEADERS;
+      cachedLeaderboard = [];
+      cacheTimestamp = now;
+      return [];
     }
 
     const leaders: LeaderboardEntry[] = [];
     querySnapshot.forEach((doc) => {
       leaders.push({ id: doc.id, ...doc.data() } as LeaderboardEntry);
     });
+    
+    // Update cache
+    cachedLeaderboard = leaders;
+    cacheTimestamp = now;
+    
     return leaders;
   } catch (error) {
     console.error("Error fetching leaderboard:", error);
-    return MOCK_LEADERS;
+    return [];
   }
 };
 
@@ -83,7 +82,55 @@ export const saveScore = async (user: UserProfile) => {
       .replace(/[^a-z0-9]/g, "_");
 
     await setDoc(doc(db, COLLECTION_NAME, safeId), newEntry);
+    
+    // Invalidate cache to force refresh
+    cachedLeaderboard = null;
   } catch (error) {
     console.error("Error saving score:", error);
+  }
+};
+
+// Save quiz score specifically (for quiz game leaderboard)
+export const saveQuizScore = async (userName: string, avatarId: string, quizScore: number) => {
+  try {
+    const level = Math.floor(quizScore / 2000) + 1;
+    let title = "Tân Binh";
+    if (quizScore >= 8000) title = "Lãnh Tụ Tương Lai";
+    else if (quizScore >= 6000) title = "Chiến Sĩ Cách Mạng";
+    else if (quizScore >= 4000) title = "Người Rèn Luyện";
+
+    const newEntry: Omit<LeaderboardEntry, "id"> = {
+      name: userName,
+      avatarId: avatarId,
+      totalXp: quizScore, // Store quiz score in totalXp field
+      title: title,
+      timestamp: Date.now(),
+    };
+
+    const safeId = userName
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "_");
+
+    await setDoc(doc(db, COLLECTION_NAME, safeId), newEntry);
+    
+    // Invalidate cache to force refresh
+    cachedLeaderboard = null;
+  } catch (error) {
+    console.error("Error saving quiz score:", error);
+  }
+};
+
+export const deleteLeaderboardEntry = async (entryId: string): Promise<boolean> => {
+  try {
+    await deleteDoc(doc(db, COLLECTION_NAME, entryId));
+    
+    // Invalidate cache
+    cachedLeaderboard = null;
+    
+    return true;
+  } catch (error) {
+    console.error("Error deleting leaderboard entry:", error);
+    return false;
   }
 };

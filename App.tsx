@@ -7,8 +7,8 @@ import { MentorChat } from './components/MentorChat';
 import { Dashboard } from './components/Dashboard';
 import { Leaderboard } from './components/Leaderboard';
 import { IntroScreen } from './components/IntroScreen';
-import { MiniGame } from './components/MiniGame';
-import { LayoutDashboard, History, Gamepad2, MessageSquareText, Menu, X, Trash2, Star, Award, Medal, BrainCircuit } from 'lucide-react';
+import { QuizGame } from './components/QuizGame';
+import { LayoutDashboard, History, Gamepad2, MessageSquareText, Menu, X, Trash2, Star, Award, Medal, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const STORAGE_KEY_USER = 'hcm_journey_user_v2'; // Changed key version to reset data structure if needed
@@ -19,6 +19,7 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.INTRO);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [newBadge, setNewBadge] = useState<Badge | null>(null);
+  const [isQuizActive, setIsQuizActive] = useState(false); // Lock navigation when quiz is active
 
   // User State - Improved initialization with data migration
   const [user, setUser] = useState<UserProfile | null>(() => {
@@ -30,7 +31,6 @@ const App: React.FC = () => {
              return {
                  ...parsed,
                  completedScenarioIds: Array.isArray(parsed.completedScenarioIds) ? parsed.completedScenarioIds : [],
-                 hasCompletedMiniGame: typeof parsed.hasCompletedMiniGame === 'boolean' ? parsed.hasCompletedMiniGame : false,
                  // Ensure vital fields exist
                  badges: parsed.badges || BADGES,
                  stats: parsed.stats || INITIAL_STATS
@@ -64,8 +64,7 @@ const App: React.FC = () => {
         stats: INITIAL_STATS,
         badges: BADGES,
         totalXp: 0,
-        completedScenarioIds: [],
-        hasCompletedMiniGame: false
+        completedScenarioIds: []
     };
     setUser(newUser);
     setCurrentView(AppView.DASHBOARD);
@@ -81,10 +80,6 @@ const App: React.FC = () => {
     if (activityType === 'scenario' && activityId && completedIds.includes(activityId)) {
         console.log("Scenario already completed, no XP awarded.");
         return; 
-    }
-    if (activityType === 'minigame' && user.hasCompletedMiniGame) {
-        console.log("Minigame already completed, no XP awarded.");
-        return;
     }
 
     setUser(prev => {
@@ -106,8 +101,6 @@ const App: React.FC = () => {
       if (activityType === 'scenario' && activityId && !updatedCompletedScenarioIds.includes(activityId)) {
           updatedCompletedScenarioIds.push(activityId);
       }
-      
-      const updatedHasCompletedMiniGame = activityType === 'minigame' ? true : prev.hasCompletedMiniGame;
 
       // Check badges logic...
       let justUnlocked: Badge | null = null;
@@ -134,8 +127,7 @@ const App: React.FC = () => {
           stats: newStats,
           totalXp,
           badges: updatedBadges,
-          completedScenarioIds: updatedCompletedScenarioIds,
-          hasCompletedMiniGame: updatedHasCompletedMiniGame
+          completedScenarioIds: updatedCompletedScenarioIds
       };
     });
   };
@@ -148,22 +140,46 @@ const App: React.FC = () => {
     }
   };
 
-  const NavItem = ({ view, icon: Icon, label }: { view: AppView, icon: any, label: string }) => (
-    <button
-      onClick={() => {
-        setCurrentView(view);
-        setIsSidebarOpen(false);
-      }}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors duration-200 font-medium ${
-        currentView === view 
-          ? 'bg-vn-red text-vn-gold shadow-md' 
-          : 'text-ink hover:bg-parchment-dark'
-      }`}
-    >
-      <Icon className="w-5 h-5" />
-      <span>{label}</span>
-    </button>
-  );
+  // Handler for Quiz game score update
+  const handleQuizScoreUpdate = (quizScore: number) => {
+    if (!user) return;
+    
+    setUser(prev => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        totalXp: prev.totalXp + quizScore
+      };
+    });
+  };
+
+  const NavItem = ({ view, icon: Icon, label }: { view: AppView, icon: any, label: string }) => {
+    const handleClick = () => {
+      if (isQuizActive) {
+        alert('⚠️ Bạn đang làm bài quiz! Vui lòng hoàn thành trước khi chuyển trang.');
+        return;
+      }
+      setCurrentView(view);
+      setIsSidebarOpen(false);
+    };
+
+    return (
+      <button
+        onClick={handleClick}
+        disabled={isQuizActive && currentView !== view}
+        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors duration-200 font-medium ${
+          currentView === view 
+            ? 'bg-vn-red text-vn-gold shadow-md' 
+            : isQuizActive && currentView !== view
+            ? 'text-gray-400 cursor-not-allowed opacity-50'
+            : 'text-ink hover:bg-parchment-dark'
+        }`}
+      >
+        <Icon className="w-5 h-5" />
+        <span>{label}</span>
+      </button>
+    );
+  };
 
   // --- RENDER ---
 
@@ -207,7 +223,7 @@ const App: React.FC = () => {
           <NavItem view={AppView.DASHBOARD} icon={LayoutDashboard} label="Tổng Quan" />
           <NavItem view={AppView.TIMELINE} icon={History} label="Dòng Chảy Lịch Sử" />
           <NavItem view={AppView.SCENARIO} icon={Gamepad2} label="Thử Thách Nhập Vai" />
-          <NavItem view={AppView.MINIGAME} icon={BrainCircuit} label="Mật Mã Di Sản" />
+          <NavItem view={AppView.QUIZ} icon={Zap} label="Trò Chơi Kiến Thức" />
           <NavItem view={AppView.MENTOR} icon={MessageSquareText} label="Người Dẫn Đường" />
           <NavItem view={AppView.LEADERBOARD} icon={Medal} label="Bảng Vàng" />
         </nav>
@@ -255,7 +271,7 @@ const App: React.FC = () => {
               <NavItem view={AppView.DASHBOARD} icon={LayoutDashboard} label="Tổng Quan" />
               <NavItem view={AppView.TIMELINE} icon={History} label="Dòng Chảy Lịch Sử" />
               <NavItem view={AppView.SCENARIO} icon={Gamepad2} label="Thử Thách Nhập Vai" />
-              <NavItem view={AppView.MINIGAME} icon={BrainCircuit} label="Mật Mã Di Sản" />
+              <NavItem view={AppView.QUIZ} icon={Zap} label="Trò Chơi Kiến Thức" />
               <NavItem view={AppView.MENTOR} icon={MessageSquareText} label="Người Dẫn Đường" />
               <NavItem view={AppView.LEADERBOARD} icon={Medal} label="Bảng Vàng" />
               
@@ -288,7 +304,13 @@ const App: React.FC = () => {
               {currentView === AppView.DASHBOARD && <Dashboard user={user} />}
               {currentView === AppView.TIMELINE && <TimelineView />}
               {currentView === AppView.SCENARIO && <ScenarioGame user={user} onUpdateStats={handleUpdateStats} />}
-              {currentView === AppView.MINIGAME && <MiniGame user={user} onUpdateStats={handleUpdateStats} />}
+              {currentView === AppView.QUIZ && (
+                <QuizGame 
+                  user={user} 
+                  onScoreUpdate={handleQuizScoreUpdate}
+                  onQuizActive={setIsQuizActive}
+                />
+              )}
               {currentView === AppView.MENTOR && (
                 <div className="h-full p-4 md:p-8 max-w-4xl mx-auto">
                   <MentorChat />
