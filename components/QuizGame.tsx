@@ -46,7 +46,7 @@ export const QuizGame: React.FC<QuizGameProps> = ({ user, onScoreUpdate, onQuizA
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isAnswered, gameFinished, currentQuestionIndex]);
+  }, [quizStarted, isAnswered, gameFinished, currentQuestionIndex]);
 
   // Reset timer when question changes
   useEffect(() => {
